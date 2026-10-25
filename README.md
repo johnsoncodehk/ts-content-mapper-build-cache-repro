@@ -39,17 +39,18 @@ which imports `../shared/Shared.foo` and `../shared/util` (a plain `.ts` file):
 ```
 
 - `tsc -b refs/b` builds `refs/shared` (the one transform of `Shared.foo`), emits `Shared.d.foo.ts` and
-  `util.d.ts`, and `refs/b` uses both declaration files with no errors from the import.
+  `util.d.ts` into `refs/shared/out`, and `refs/b` uses both declaration files with no errors from the imports.
 - `tsc -p refs/b`, with `refs/shared` already built, still resolves `Shared.foo` to the source file: it
-  transforms it again and reports TS6059 and TS6307 on the import. `util.ts` resolves to `util.d.ts`.
+  transforms it again, reports TS6059 and TS6307 on the import, and writes `Shared.d.foo.ts` next to
+  `Shared.foo` in `refs/shared`, outside any `outDir`. `util.ts` resolves to `refs/shared/out/util.d.ts`.
 - `tsc -p refs/b` with `refs/shared` not built reports TS6305 for `util.ts`, but nothing of the kind for
-  `Shared.foo`, which it transforms and includes from source.
+  `Shared.foo`, which it again transforms, includes from source and emits next to the source.
 
 Expected: in `tsc -p`, an import of a content-mapped file that belongs to a referenced project resolves
 to that project's `Shared.d.foo.ts` (or reports TS6305 when it has not been built), as plain `.ts` files
 and as `tsc -b` already do.
 
-Output with `typescript@7.1.0-beta`:
+Output with `typescript@7.1.0-beta` (`refs.sh` deletes the stray `Shared.d.foo.ts` after each run):
 
 ```
 TS: Version 7.1.0-beta
@@ -64,6 +65,7 @@ With refs/shared built:
   refs/b/main.ts(1,24): error TS6307: File 'refs/shared/Shared.foo' is not listed within the file list of project 'refs/b/tsconfig.json'. Projects must list all files or use an 'include' pattern.
   refs/b/main.ts(2,14): error TS2322: Type 'number' is not assignable to type 'string'.
   Shared.foo transforms: 1
+  wrote refs/shared/Shared.d.foo.ts (next to the source, in the referenced project)
 
 With refs/shared not built:
 -p refs/b
@@ -72,4 +74,5 @@ With refs/shared not built:
   refs/b/main.ts(2,14): error TS2322: Type 'number' is not assignable to type 'string'.
   refs/b/main.ts(3,19): error TS6305: Output file 'refs/shared/out/util.d.ts' has not been built from source file 'refs/shared/util.ts'.
   Shared.foo transforms: 1
+  wrote refs/shared/Shared.d.foo.ts (next to the source, in the referenced project)
 ```

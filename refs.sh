@@ -11,6 +11,10 @@ run() {
 	echo "$*"
 	node "$TSC" "$@" --runExternalCode --pretty false 2>&1 | sed "s|$PWD/||g; s/^/  /"
 	echo "  Shared.foo transforms: $(grep -c '^transform Shared.foo' "$FOO_TRANSFORM_LOG" || true)"
+	if [ -f refs/shared/Shared.d.foo.ts ]; then
+		echo "  wrote refs/shared/Shared.d.foo.ts (next to the source, in the referenced project)"
+		rm refs/shared/Shared.d.foo.ts
+	fi
 }
 
 rm -rf refs/shared/out refs/b/out
