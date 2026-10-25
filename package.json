@@ -1,0 +1,8 @@
+{
+  "name": "ts-content-mapper-build-cache-repro",
+  "private": true,
+  "devDependencies": {
+    "foo-mapper": "file:./foo-mapper",
+    "typescript": "7.1.0-beta"
+  }
+}
