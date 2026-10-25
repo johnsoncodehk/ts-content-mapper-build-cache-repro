@@ -25,6 +25,6 @@ TSC=/path/to/tsc ./run.sh
 
 ## Control: plain `.ts`
 
-Both projects also include `shared/plain.ts`, a generated 200,000-line plain TypeScript file. Build mode caches only `.d.ts` and `.json` files across projects (`internal/execute/build/host.go` `GetSourceFile`), so plain `.ts` files are also parsed once per project. The control part of `run.sh` prints per-project parse time. In our run, project `a` took 0.240–0.266s (including lib `.d.ts` files) and project `b` took 0.152–0.158s, which is nearly all the re-parse of `plain.ts`, because lib files are already cached. `tsc -p a` alone took 0.200s.
+Both projects also include `shared/plain.ts`, a generated 1,400,000-line (about 55 MB) plain TypeScript file. Build mode caches only `.d.ts` and `.json` files across projects (`internal/execute/build/host.go` `GetSourceFile`), so plain `.ts` files are also parsed once per project. The control part of `run.sh` prints per-project parse time. In our run, project `a` took 1.242s and project `b` took 1.261s. Lib `.d.ts` files are already cached when `b` is built, so `b`'s time is almost entirely the re-parse of `plain.ts`. `tsc -p a` alone took 1.172s.
 
 Re-parsing a plain `.ts` file is cheap and in-process. A content-mapped file instead costs an IPC round trip and a transform in the external mapper on top of the parse. So this report asks only for build mode to cache content mapper transform results (text and mappings, not ASTs) across projects, keyed like the language server's `contentMappedParseCache`.
