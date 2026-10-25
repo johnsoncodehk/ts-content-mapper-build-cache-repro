@@ -1,0 +1,6 @@
+{
+	"compilerOptions": { "composite": true, "outDir": "out", "skipLibCheck": true, "types": [] },
+	"contentMappers": [{ "package": "foo-mapper", "extensions": [".foo"] }],
+	"references": [{ "path": "../shared" }],
+	"include": ["main.ts"]
+}

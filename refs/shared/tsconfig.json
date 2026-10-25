@@ -1,0 +1,5 @@
+{
+	"compilerOptions": { "composite": true, "emitDeclarationOnly": true, "outDir": "out", "skipLibCheck": true, "types": [] },
+	"contentMappers": [{ "package": "foo-mapper", "extensions": [".foo"] }],
+	"include": ["Shared.foo", "util.ts"]
+}
